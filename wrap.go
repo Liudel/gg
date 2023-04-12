@@ -1,7 +1,6 @@
 package gg
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 )
@@ -73,7 +72,6 @@ func truncateOverflow(m measureStringer, text string, width float64) (string, st
 	for i := range t {
 		w, _ := m.MeasureString(string(t[:i]))
 		if w > width {
-			fmt.Println(string(t[:i]), string(t[i:]))
 			return string(t[:i]), string(t[i:])
 		}
 	}
