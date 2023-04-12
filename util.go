@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/golang/freetype/truetype"
@@ -143,4 +144,9 @@ func LoadFontFace(path string, points float64) (font.Face, error) {
 		// Hinting: font.HintingFull,
 	})
 	return face, nil
+}
+
+func RemoveSpace(text string) string {
+	re := regexp.MustCompile(`([，。！？：、]) `)
+	return string(re.ReplaceAll([]byte(text), []byte("$1")))
 }

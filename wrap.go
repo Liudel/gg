@@ -1,6 +1,7 @@
 package gg
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
 )
@@ -37,22 +38,45 @@ func wordWrap(m measureStringer, s string, width float64) []string {
 			w, _ := m.MeasureString(x + fields[i])
 			if w > width {
 				if x == "" {
-					result = append(result, strings.ReplaceAll(fields[i], " ", ""))
+					at, st := truncateOverflow(m, fields[i], width)
+					for st != "" {
+						result = append(result, RemoveSpace(at))
+						at, st = truncateOverflow(m, st, width)
+					}
+					result = append(result, RemoveSpace(at))
 					x = ""
 					continue
 				} else {
-					result = append(result, strings.ReplaceAll(x, " ", ""))
+					at, st := truncateOverflow(m, x, width)
+					for st != "" {
+						result = append(result, RemoveSpace(at))
+						at, st = truncateOverflow(m, st, width)
+					}
+					result = append(result, RemoveSpace(at))
 					x = ""
 				}
 			}
 			x += fields[i] + fields[i+1]
 		}
 		if x != "" {
-			result = append(result, strings.ReplaceAll(x, " ", ""))
+			result = append(result, RemoveSpace(x))
 		}
 	}
 	for i, line := range result {
 		result[i] = strings.TrimSpace(line)
 	}
 	return result
+}
+
+func truncateOverflow(m measureStringer, text string, width float64) (string, string) {
+	t := []rune(text)
+	for i := range t {
+		w, _ := m.MeasureString(string(t[:i]))
+		if w > width {
+			fmt.Println(string(t[:i]), string(t[i:]))
+			return string(t[:i]), string(t[i:])
+		}
+	}
+
+	return text, ""
 }
